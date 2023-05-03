@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:savex/features/budget.dart';
 import 'package:savex/widgets/bottom_navigator_item.dart';
 
+import '../features/discount.dart';
 import '../features/user_account.dart';
 
 
@@ -89,6 +90,20 @@ class _HomeState extends State<Home> {
                 },
               ),
               ListTile(
+                leading: Icon(Icons.credit_card_rounded,color: Colors.deepPurple,),
+                title: Text("Trading Accounts",style: TextStyle(fontSize: 15,),),
+                onTap: (){
+                  Navigator.pushNamed(context, '/trading_account_input');
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.person,color: Colors.deepPurple,),
+                title: Text("Personal Goals",style: TextStyle(fontSize: 15,),),
+                onTap: (){
+                  Navigator.pushNamed(context, '/personal_goal_setter');
+                },
+              ),
+              ListTile(
                 leading: Icon(Icons.settings,color: Colors.deepPurple,),
                 title: Text("Settings",style: TextStyle(fontSize: 15,),),
               ),
@@ -105,11 +120,11 @@ class _HomeState extends State<Home> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              bottomNavItem('List', Icons.checklist),
-              bottomNavItem('Distribution', Icons.pie_chart_rounded),
+              bottomNavItem('/personal_goals_screen',context,'List', Icons.checklist),
+              bottomNavItem('/cash_tracker',context,'Tracker', Icons.money),
               Container(width: 60,height:60,decoration:BoxDecoration(borderRadius: BorderRadius.circular(30),color: Colors.deepPurpleAccent),child: IconButton(onPressed: (){}, icon: Icon(Icons.add,color: Colors.white,size: 30,))),
-              bottomNavItem('Dashboard', Icons.wallet_rounded),
-              bottomNavItem('Settings', Icons.settings),
+              bottomNavItem('/personal_goals_screen',context,'Dashboard', Icons.wallet_rounded),
+              bottomNavItem('/personal_goals_screen',context,'Settings', Icons.settings),
             ],
           ),
         ),
@@ -118,7 +133,7 @@ class _HomeState extends State<Home> {
         scrollDirection: Axis.vertical,
         physics: ScrollPhysics(),
         child: Container(
-          height:  MediaQuery.of(context).size.height,
+          height:  MediaQuery.of(context).size.height + 100,
           child: Column(
             children: [
               Container(
@@ -289,6 +304,57 @@ class _HomeState extends State<Home> {
                     }
                 ),
               ):Container(),
+
+
+              Row(
+                children: [
+                  Text('  General Discounts', style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                ],
+              ),
+
+              SizedBox(height: 20,),
+
+              Container(
+                height: 150,
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: generalDiscounts.length,
+                    scrollDirection: Axis.horizontal,
+                    physics: ScrollPhysics(),
+                    itemBuilder: (context,index){
+                      return Container(
+                        alignment: Alignment.center,
+                        width: 110,
+                        height: 150,
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: Card(
+                            elevation: 3,
+                            child: Container(
+                              height: 140,
+                              margin: EdgeInsets.all(10),
+                              alignment: Alignment.center,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(generalDiscounts[index].merchant,style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,),),
+                                  Container(
+                                    width: 50,
+                                    height: 44, //
+                                    child: Image.asset('assets/${generalDiscounts[index].image}'),
+                                  ),
+                                  SizedBox(height: 15,),
+                                  Text(generalDiscounts[index].discountAmount,style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,),),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                ),
+              ),
 
             ],
           ),
