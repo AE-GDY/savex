@@ -1,5 +1,5 @@
 
-
+// CLASS FOR CREATING TRADING ACCOUNT STRUCTURE
 class TradingAccount {
 
   String email;
@@ -9,4 +9,5 @@ class TradingAccount {
 
 }
 
+// LIST FOR STORING LINKED TRADING ACCOUNTS
 List<TradingAccount> linkedTradingAccounts = [];

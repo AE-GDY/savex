@@ -1,6 +1,7 @@
 
 import 'package:savex/features/category.dart';
 
+// CLASS FOR STORING BUDGET CREATED BY USER
 class Budget{
 
   static late Budget userBudget;

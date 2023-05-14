@@ -1,5 +1,5 @@
 
-
+// CLASS FOR STORING BANK ACCOUNT INFORMATION
 class BankAccount{
 
   late String accountNumber;
@@ -17,5 +17,5 @@ class BankAccount{
 
 }
 
-
+// LIST FOR STORING LINKED BANK ACCOUNTS
 List<BankAccount> linkedAccounts = [];

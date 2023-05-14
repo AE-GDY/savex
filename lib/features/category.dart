@@ -1,5 +1,5 @@
 
-
+// CLASS FOR STORING CATEGORY SPENDING LIMITS
 class Category{
 
   late String title;

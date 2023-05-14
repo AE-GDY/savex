@@ -1,12 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:savex/features/budget.dart';
 import 'package:savex/widgets/bottom_navigator_item.dart';
-
 import '../features/discount.dart';
-import '../features/user_account.dart';
+import '../widgets/drawer.dart';
 
-
+// HOME SCREEN / WIDGET
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
@@ -18,14 +16,15 @@ class _HomeState extends State<Home> {
 
 
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
-
   TextStyle titleStyle = TextStyle(fontSize: 14,color: Colors.grey[600],fontWeight: FontWeight.bold,);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       key: scaffoldKey,
+
+      // APP BAR
       appBar: AppBar(
         automaticallyImplyLeading: false,
         leading: IconButton(onPressed: (){scaffoldKey.currentState?.openDrawer();},icon: Icon(Icons.menu,color: Colors.white,),),
@@ -33,86 +32,12 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.deepPurpleAccent,
         elevation: 0,
       ),
-      drawer: Container(
-        color: Colors.white,
-        width: 255,
-        child: Drawer(
-          child: ListView(
-            children: [
-              Container(
-                height: 165,
-                child: DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.account_circle,size: 60,color: Colors.deepPurple,),
-                      SizedBox(width: 16,),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(UserAccount.currentUser.fullName,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,fontFamily: "Brand-Bold",),),
-                          SizedBox(height: 6,),
-                          Text("Visit Profile",),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
 
-              Divider(
-                height: 1,
-                thickness: 1,
-              ),
+      // DRAWER
+      drawer: appDrawer(context, scaffoldKey),
 
-              SizedBox(height: 12,),
-
-              ListTile(
-                leading: Icon(Icons.person,color: Colors.deepPurple,),
-                title: Text("Profile",style: TextStyle(fontSize: 15,),),
-              ),
-
-              ListTile(
-                leading: Icon(Icons.wallet_rounded,color: Colors.deepPurple,),
-                title: Text("Dashboard",style: TextStyle(fontSize: 15,),),
-                onTap: (){
-                  Navigator.pushNamed(context, '/schedule');
-                  scaffoldKey.currentState?.closeDrawer();
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.credit_card_rounded,color: Colors.deepPurple,),
-                title: Text("Bank Accounts",style: TextStyle(fontSize: 15,),),
-                onTap: (){
-                  Navigator.pushNamed(context, '/bank_account_input');
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.credit_card_rounded,color: Colors.deepPurple,),
-                title: Text("Trading Accounts",style: TextStyle(fontSize: 15,),),
-                onTap: (){
-                  Navigator.pushNamed(context, '/trading_account_input');
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.person,color: Colors.deepPurple,),
-                title: Text("Personal Goals",style: TextStyle(fontSize: 15,),),
-                onTap: (){
-                  Navigator.pushNamed(context, '/personal_goal_setter');
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.settings,color: Colors.deepPurple,),
-                title: Text("Settings",style: TextStyle(fontSize: 15,),),
-              ),
-
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: Container(
+      // BOTTOM NAVIGATOR
+      bottomNavigationBar: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: 80,
         child: Card(
@@ -120,246 +45,305 @@ class _HomeState extends State<Home> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              bottomNavItem('/personal_goals_screen',context,'List', Icons.checklist),
+              bottomNavItem('/personal_goals_screen',context,'Goals', Icons.checklist),
               bottomNavItem('/cash_tracker',context,'Tracker', Icons.money),
-              Container(width: 60,height:60,decoration:BoxDecoration(borderRadius: BorderRadius.circular(30),color: Colors.deepPurpleAccent),child: IconButton(onPressed: (){}, icon: Icon(Icons.add,color: Colors.white,size: 30,))),
-              bottomNavItem('/personal_goals_screen',context,'Dashboard', Icons.wallet_rounded),
+              bottomNavItem('/analytics',context,'Analytics', Icons.analytics_outlined),
+              bottomNavItem('/finances',context,'Finances', Icons.wallet_rounded),
               bottomNavItem('/personal_goals_screen',context,'Settings', Icons.settings),
             ],
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        physics: ScrollPhysics(),
-        child: Container(
-          height:  MediaQuery.of(context).size.height + 100,
-          child: Column(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height / 1.8,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      top: 0,
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height / 2.5,
-                        decoration: BoxDecoration(
-                          color: Colors.deepPurpleAccent,
-                        ),
-                        child: Column(
-                          children: [
-                            SizedBox(height: 10,),
-                            Text('BUDGET',style: TextStyle(color: Colors.white,fontSize: 22,fontWeight: FontWeight.bold),),
-                            SizedBox(height: 10,),
-                            Budget.budgetCreated?Container(
-                              height: 160,
-                              width:160,
-                              decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.circular(80),
-                                border: Border.all(color: Colors.white,width: 5),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
+
+      // BODY OF SCREEN
+      body: homeScreenBody(context),
+    );
+  }
+
+
+  // HOME BODY WIDGET
+  Widget homeScreenBody(BuildContext context){
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      physics: ScrollPhysics(),
+      child: SizedBox(
+        height:  MediaQuery.of(context).size.height + 300,
+        child: Column(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height / 1.8,
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: 0,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height / 2.5,
+                      decoration: const BoxDecoration(
+                        color: Colors.deepPurpleAccent,
+                      ),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 10,),
+                          const Text('BUDGET',style: TextStyle(color: Colors.white,fontSize: 22,fontWeight: FontWeight.bold),),
+                          const SizedBox(height: 10,),
+                          Budget.budgetCreated?Container(
+                            height: 160,
+                            width:160,
+                            decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(80),
+                              border: Border.all(color: Colors.white,width: 5),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.home_rounded,color: Colors.white,size: 60,),
+                                const SizedBox(height: 5,),
+                                Text('${(Budget.userBudget.totalBudget - Budget.userBudget.totalSpent).round()} EGP',textAlign: TextAlign.center,style: const TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 16),),
+                                const SizedBox(height: 5,),
+                                Text('LEFT TO SPEND',textAlign: TextAlign.center,style: TextStyle(color: Colors.grey[400],fontWeight: FontWeight.bold),),
+                              ],
+                            ),
+                          ):Container(),
+
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  Positioned(
+                    top: 230,
+                    left: (MediaQuery.of(context).size.width / 2) - (MediaQuery.of(context).size.width * 0.8/2),
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      height: MediaQuery.of(context).size.height / 4.7,
+                      decoration: const BoxDecoration(
+
+                      ),
+                      child: Card(
+                        child: Budget.budgetCreated?Container(
+                          margin: const EdgeInsets.only(left: 10,right: 10),
+                          child: Column(
+                            children: [
+
+                              const SizedBox(height: 20,),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Icon(Icons.home_rounded,color: Colors.white,size: 60,),
-                                  SizedBox(height: 5,),
-                                  Text('${(Budget.userBudget.totalBudget - Budget.userBudget.totalSpent).round()} EGP',textAlign: TextAlign.center,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 16),),
-                                  SizedBox(height: 5,),
-                                  Text('LEFT TO SPEND',textAlign: TextAlign.center,style: TextStyle(color: Colors.grey[400],fontWeight: FontWeight.bold),),
+                                  Icon(Icons.arrow_back,color: Colors.grey[600],),
+                                  Text(Budget.userBudget.month,style: titleStyle),
+                                  Icon(Icons.arrow_forward,color: Colors.grey[600],),
                                 ],
                               ),
-                            ):Container(),
 
+                              const SizedBox(height: 30,),
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+
+                                  Column(
+                                    children: [
+                                      Text('Projection',style: TextStyle(fontSize: 14,color: Colors.grey[500],fontWeight: FontWeight.bold,)),
+                                      const SizedBox(height: 5,),
+                                      Text('${Budget.userBudget.totalBudget} EGP',style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 16),),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text('Daily Budget',style: TextStyle(fontSize: 14,color: Colors.grey[500],fontWeight: FontWeight.bold,),),
+                                      const SizedBox(height: 5,),
+                                      Text('${Budget.userBudget.dailyBudget.round()} EGP',style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 16),),
+                                    ],
+                                  ),
+
+                                  Column(
+                                    children: [
+                                      Text('Total Spend',style: TextStyle(fontSize: 14,color: Colors.grey[500],fontWeight: FontWeight.bold,),),
+                                      const SizedBox(height: 5,),
+                                      Text('${Budget.userBudget.totalSpent.round()} EGP',style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 16),),
+                                    ],
+                                  ),
+
+                                ],
+                              ),
+                            ],
+                          ),
+                        ):Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text("No Budget Created",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,),),
+                            const SizedBox(height: 20,),
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.7,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Colors.deepPurpleAccent,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: TextButton(onPressed: (){ Navigator.pushNamed(context, '/budget_input'); },child: Text('Create Budget',style: TextStyle(color: Colors.white),),),
+                            ),
                           ],
                         ),
                       ),
                     ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10,),
 
-                    Positioned(
-                      top: 230,
-                      left: (MediaQuery.of(context).size.width / 2) - (MediaQuery.of(context).size.width * 0.8/2),
+            Budget.budgetCreated?Text('BUDGET DISTRIBUTION', style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.grey[600]),):Container(),
+            const SizedBox(height: 20,),
+
+            Budget.budgetCreated?SizedBox(
+              height: 120,
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: Budget.userBudget.categories.length,
+                  scrollDirection: Axis.horizontal,
+                  physics: const ScrollPhysics(),
+                  itemBuilder: (context,index){
+                    return Container(
+                      alignment: Alignment.center,
+                      width: 110,
+                      height: 120,
                       child: Container(
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        height: MediaQuery.of(context).size.height / 4.7,
-                        decoration: BoxDecoration(
-
-                        ),
+                        alignment: Alignment.center,
                         child: Card(
-                          child: Budget.budgetCreated?Container(
-                            margin: EdgeInsets.only(left: 10,right: 10),
-                            child: Column(
-                              //mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-
-                                SizedBox(height: 20,),
-
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Icon(Icons.arrow_back,color: Colors.grey[600],),
-                                    Text(Budget.userBudget.month,style: titleStyle),
-                                    Icon(Icons.arrow_forward,color: Colors.grey[600],),
-                                  ],
-                                ),
-
-
-                                SizedBox(height: 30,),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-
-                                    Column(
-                                      children: [
-                                        Text('Projection',style: TextStyle(fontSize: 14,color: Colors.grey[500],fontWeight: FontWeight.bold,)),
-                                        SizedBox(height: 5,),
-                                        Text('${Budget.userBudget.totalBudget} EGP',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 16),),
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Text('Daily Budget',style: TextStyle(fontSize: 14,color: Colors.grey[500],fontWeight: FontWeight.bold,),),
-                                        SizedBox(height: 5,),
-                                        Text('${Budget.userBudget.dailyBudget.round()} EGP',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 16),),
-                                      ],
-                                    ),
-
-                                    Column(
-                                      children: [
-                                        Text('Total Spend',style: TextStyle(fontSize: 14,color: Colors.grey[500],fontWeight: FontWeight.bold,),),
-                                        SizedBox(height: 5,),
-                                        Text('${Budget.userBudget.totalSpent.round()} EGP',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold,fontSize: 16),),
-                                      ],
-                                    ),
-
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ):Container(
+                          elevation: 3,
+                          child: Container(
+                            margin: const EdgeInsets.all(10),
+                            alignment: Alignment.center,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Text("No Budget Created",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,),),
-                                SizedBox(height: 20,),
-                                Container(
-                                  width: MediaQuery.of(context).size.width * 0.7,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    color: Colors.deepPurpleAccent,
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: TextButton(onPressed: (){ Navigator.pushNamed(context, '/budget_input'); },child: Text('Create Budget',style: TextStyle(color: Colors.white),),),
-                                ),
+                                Text(Budget.userBudget.categories[index].title,style: TextStyle(color: Colors.grey[500],fontSize: 15,fontWeight: FontWeight.bold),),
+                                const SizedBox(height: 20,),
+                                Text('${Budget.userBudget.categories[index].amountLeftToSpend.round()} EGP',style: const TextStyle(color: Colors.black,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
+                                const Text('remaining',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
+
                               ],
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                    );
+                  }
               ),
-              SizedBox(height: 10,),
+            ):Container(),
 
-              Budget.budgetCreated?Text('BUDGET DISTRIBUTION', style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold,color: Colors.grey[600]),):Container(),
-              SizedBox(height: 20,),
 
-              Budget.budgetCreated?Container(
-                height: 120,
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: Budget.userBudget.categories.length,
-                    scrollDirection: Axis.horizontal,
-                    physics: ScrollPhysics(),
-                    itemBuilder: (context,index){
-                      return Container(
+            Row(
+              children: const [
+                Text('  General Discounts', style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+              ],
+            ),
+
+            const SizedBox(height: 20,),
+
+            SizedBox(
+              height: 150,
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: generalDiscounts.length,
+                  scrollDirection: Axis.horizontal,
+                  physics: ScrollPhysics(),
+                  itemBuilder: (context,index){
+                    return Container(
+                      alignment: Alignment.center,
+                      width: 110,
+                      height: 150,
+                      child: Container(
                         alignment: Alignment.center,
-                        width: 110,
-                        height: 120,
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: Card(
-                            elevation: 3,
-                            child: Container(
-                              margin: EdgeInsets.all(10),
-                              alignment: Alignment.center,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(Budget.userBudget.categories[index].title,style: TextStyle(color: Colors.grey[500],fontSize: 15,fontWeight: FontWeight.bold),),
-                                  SizedBox(height: 20,),
-                                  Text('${Budget.userBudget.categories[index].amountLeftToSpend.round()} EGP',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
-                                  Text('remaining',style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
-
-                                ],
-                              ),
+                        child: Card(
+                          elevation: 3,
+                          child: Container(
+                            height: 140,
+                            margin: const EdgeInsets.all(10),
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(generalDiscounts[index].merchant,style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,),),
+                                SizedBox(
+                                  width: 50,
+                                  height: 44, //
+                                  child: Image.asset('assets/${generalDiscounts[index].image}'),
+                                ),
+                                const SizedBox(height: 15,),
+                                Text(generalDiscounts[index].discountAmount,style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,),),
+                              ],
                             ),
                           ),
                         ),
-                      );
-                    }
-                ),
-              ):Container(),
-
-
-              Row(
-                children: [
-                  Text('  General Discounts', style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
-                ],
+                      ),
+                    );
+                  }
               ),
+            ),
 
-              SizedBox(height: 20,),
+            const SizedBox(height: 10,),
 
-              Container(
-                height: 150,
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: generalDiscounts.length,
-                    scrollDirection: Axis.horizontal,
-                    physics: ScrollPhysics(),
-                    itemBuilder: (context,index){
-                      return Container(
+            Row(
+              children: const [
+                Text('  Special Discounts', style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+              ],
+            ),
+
+            const SizedBox(height: 20,),
+
+            Container(
+              height: 150,
+              alignment: Alignment.centerLeft,
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: personalDiscounts.length,
+                  scrollDirection: Axis.horizontal,
+                  physics: const ScrollPhysics(),
+                  itemBuilder: (context,index){
+                    return Container(
+                      alignment: Alignment.center,
+                      width: 110,
+                      height: 150,
+                      child: Container(
                         alignment: Alignment.center,
-                        width: 110,
-                        height: 150,
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: Card(
-                            elevation: 3,
-                            child: Container(
-                              height: 140,
-                              margin: EdgeInsets.all(10),
-                              alignment: Alignment.center,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(generalDiscounts[index].merchant,style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,),),
-                                  Container(
-                                    width: 50,
-                                    height: 44, //
-                                    child: Image.asset('assets/${generalDiscounts[index].image}'),
-                                  ),
-                                  SizedBox(height: 15,),
-                                  Text(generalDiscounts[index].discountAmount,style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,),),
-                                ],
-                              ),
+                        child: Card(
+                          elevation: 3,
+                          child: Container(
+                            height: 140,
+                            margin: const EdgeInsets.all(10),
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(personalDiscounts[index].merchant,style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,),),
+                                SizedBox(
+                                  width: 50,
+                                  height: 44, //
+                                  child: Image.asset('assets/${personalDiscounts[index].image}'),
+                                ),
+                                const SizedBox(height: 15,),
+                                Text(personalDiscounts[index].discountAmount,style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,),),
+                              ],
                             ),
                           ),
                         ),
-                      );
-                    }
-                ),
+                      ),
+                    );
+                  }
               ),
+            ),
 
-            ],
-          ),
+          ],
         ),
       ),
     );
   }
+
 }

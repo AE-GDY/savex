@@ -1,4 +1,6 @@
 
+
+// CLASS FOR CREATING A NOTIFICATION
 class Notification {
 
   late String message;

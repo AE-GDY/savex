@@ -41,7 +41,7 @@ class _AuthenticateState extends State<Authenticate> {
 
               SizedBox(height: 50,),
 
-             isSignUp? Container(
+              isSignUp? Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Colors.grey,width: 1),
@@ -87,7 +87,6 @@ class _AuthenticateState extends State<Authenticate> {
               ),
               SizedBox(height: 50,),
 
-
               Container(
                 width: MediaQuery.of(context).size.width * 0.8,
                 margin: EdgeInsets.only(bottom: 40),
@@ -97,17 +96,20 @@ class _AuthenticateState extends State<Authenticate> {
                 ),
                 child: TextButton(
                   onPressed: (){
-
                       setState(() {
                         if(isSignUp){
-                          signUpUser(nameController.text, emailController.text, passwordController.text);
+                          UserAccount newUserAccount = UserAccount(
+                              fullName: nameController.text,
+                              email: emailController.text,
+                              password: passwordController.text
+                          );
+                          newUserAccount.signUpUser(isSignUp,newUserAccount);
+                          isSignUp = !isSignUp;
                         }
                         else{
-                          signInUser(emailController.text, passwordController.text);
+                          UserAccount.signInUser(emailController.text, passwordController.text,context);
                         }
                       });
-
-
                     },
                   child: Text(isSignUp?'Sign up':'Sign in',style: TextStyle(color: Colors.white),),
                 ),
@@ -144,36 +146,4 @@ class _AuthenticateState extends State<Authenticate> {
       ),
     );
   }
-
-
-  bool signUpUser(String fullName, String email, String password){
-
-    if(fullName.isNotEmpty && email.isNotEmpty && password.isNotEmpty){
-      UserAccount newUserAccount = UserAccount(fullName: fullName, email: email, password: password);
-      registeredUsers.add(newUserAccount);
-      isSignUp = !isSignUp;
-      return true;
-    }
-    return false;
-
-  }
-
-  void signInUser(String email, String password){
-
-    int index = 0;
-
-    while(index < registeredUsers.length){
-
-      if(email == registeredUsers[index].email && password == registeredUsers[index].password){
-
-        UserAccount.currentUser = registeredUsers[index];
-
-        Navigator.popAndPushNamed(context, '/');
-      }
-
-      index++;
-    }
-
-  }
-
 }

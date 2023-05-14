@@ -1,5 +1,5 @@
 
-
+// CLASS FOR STORING CASH TRACE INPUT BY USER
 class CashTrackerModel{
   String upToTwelvePM;
   String upToSixPM;
@@ -10,4 +10,5 @@ class CashTrackerModel{
 
 }
 
+// LIST FOR STORING CASH TRACES FOR OTHER PURPOSES, SUCH AS ANALYTICS
 List<CashTrackerModel> cashTraces = [];

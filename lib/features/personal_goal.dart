@@ -1,4 +1,6 @@
 
+
+// CLASS FOR CREATING A PERSONALIZED GOAL
 class PersonalGoal {
 
   String description;
@@ -10,4 +12,5 @@ class PersonalGoal {
 
 }
 
+// LIST FOR STORING PERSONALIZED GOALS CREATED BY THE USER
 List<PersonalGoal> personalGoals = [];

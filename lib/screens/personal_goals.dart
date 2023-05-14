@@ -33,7 +33,7 @@ class _PersonalGoalsScreenState extends State<PersonalGoalsScreen> {
                   child: Container(
                     height: 90,
                     child: ListTile(
-                      title: Text(personalGoals[index].description,),
+                      title: Text(personalGoals[index].description,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
                       subtitle: Text('Goal type: ${personalGoals[index].type}',),
                       trailing: Container(
                         //height: 150,
